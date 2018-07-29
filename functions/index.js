@@ -35,9 +35,14 @@ exports.createUser = functions.firestore
       const totalSum = 0;
       const creditAmount = 0;
       const orgShare = 0;
+
+      const doc = admin.firestore().doc('userProfile/'+phoneNumber);
+      doc.set({totalSum:totalSum,
+      creditAmount:creditAmount,
+      orgShare:orgShare})
+
       return admin.database().ref('/phoneNumbers/'+phone).push(
         {
-          phone: phone,
           totalSum:totalSum,
           creditAmount:creditAmount,
           orgShare:orgShare
@@ -52,36 +57,41 @@ exports.createUser = functions.firestore
 
         const transactionDetails = snap.data();
 
+        const status = transactionDetails.status;
         const phoneNumber = transactionDetails.phoneNumber;
         const denomination = transactionDetails.denomination;
         const creditAmount = transactionDetails.creditAmount;
         const orgShare = transactionDetails.orgShare;
+        const timeStamp = transactionDetails.uploadTime;
+
+        // if(status==="APPROVED"){
+        //   const doc = admin.firestore().doc('userProfile/'+phoneNumber);
+        //   doc.set({ phoneNumber: phoneNumber,
+        //   denomination:denomination,
+        //   creditAmount:creditAmount,
+        //   orgShare:orgShare})
+        // }
+
+        // exports.updateUser = functions.firestore
+        //     .document('userProfile/'+phoneNumber)
+        //     .onUpdate((change, context) => {
+        //       // Get an object representing the current document
+        //       const newValue = change.after.data();
+        //
+        //       // ...or the previous value before this update
+        //       const previousValue = change.before.data();
+        //
+        //
+        //
+        //     });
 
           return admin.database().ref('/phoneNumbers/'+phoneNumber)
           .push(
             {
-                      // Only edit data when it is first created.
-              // if (change.before.exists()) {
-              //   return null;
-              // }
-              // // Exit when the data is deleted.
-              // if (!change.after.exists()) {
-              //   return null;
-              // }
-
-              // const original = change.after.val();
-              // const orgTotalSum = original.totalSum+denomination;
-              // const orgCreditAmount = original.orgCreditAmount+creditAmount;
-              // const orgOrgShare = original.orgShare+orgShare;
-
-              // totalSum:orgTotalSum,
-              // creditAmount:orgCreditAmount,
-              // orgShare:orgOrgShare
-
-              phone:phoneNumber,
               totalSum:denomination,
               creditAmount:creditAmount,
-              orgShare:orgShare
+              orgShare:orgShare,
+              timeStamp:timeStamp
             });
           // perform desired operations ...
         });
